@@ -19,7 +19,7 @@ if [ -f "$CONFIGFILE" ]; then
       if [ "$2" == "" ]; then
         echo "Uso: $(basename $0) $1 REMOTEFILE [LOCALPATH]";
       else
-        distribute-pull "$2" "$3"
+        distribute-push "$2" "$3"
       fi
       ;;
     "exec")
