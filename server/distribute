@@ -1,0 +1,53 @@
+#!/bin/bash
+CONFIGFILE="/etc/distribute/servers.conf"
+USERCONFIG="${HOME}/.config/distribute/servers.conf"
+if [ -f "$USERCONFIG" ]; then
+  CONFIGFILE="$USERCONFIG";
+fi
+
+if [ -f "$CONFIGFILE" ]; then
+  # Configurazione trovata, procedo con la distribuzione
+  case "$1" in
+    "push")
+      if [ "$2" == "" ]; then
+        echo "Uso: $(basename $0) $1 LOCALFILE [REMOTEPATH]";
+      else
+        distribute-push "$2" "$3"
+      fi
+      ;;
+    "pull")
+      if [ "$2" == "" ]; then
+        echo "Uso: $(basename $0) $1 REMOTEFILE [LOCALPATH]";
+      else
+        distribute-pull "$2" "$3"
+      fi
+      ;;
+    "exec")
+      if [ "$2" == "" ]; then
+        echo "Uso: $(basename $0) $1 COMMAND";
+      else
+        distribute-exec "$2"
+      fi
+      ;;
+    "distconfig")
+      echo $CONFIGFILE;
+      ;;
+    "serverlist")
+      cat $CONFIGFILE | grep -v '^#' | cut -d':' -f1 | sed -e's/ //g';
+      ;;
+    "serverport")
+      cat $CONFIGFILE | grep -v '^#' | grep "^$2" | cut -d':' -f2 | sed -e's/ //g';
+      ;;
+    "serveruser")
+      cat $CONFIGFILE | grep -v '^#' | grep "^$2" | cut -d':' -f3 | sed -e's/ //g';
+      ;;
+    "serverpman")
+      cat $CONFIGFILE | grep -v '^#' | grep "^$2" | cut -d':' -f4 | sed -e's/ //g';
+      ;;
+    *)
+      echo "Uso: $(basename $0) [push|pull|exec]";
+      ;;
+  esac
+else
+  echo "Nessuna configurazione trovata";
+fi

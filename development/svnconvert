@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ "$1" != "" ]; then 
+  SVNURL="$1"
+  mkdir svn_temp
+  cd svn_temp
+  svn co ${SVNURL}/trunk
+  cd trunk
+  svn remove *
+  svn export ${SVNURL}/trunk src
+  svn add src
+  svn commit -m "Adeguato SVN a struttura standard"
+  cd ..
+  cd ..
+  rm -fr svn_temp
+fi

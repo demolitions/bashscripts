@@ -1,0 +1,5 @@
+#!/bin/bash
+for host in $(cat ~/.monitor/servers.lst); do
+  latency=$(latency ${host});
+  echo "${host}: ${latency}";
+done;

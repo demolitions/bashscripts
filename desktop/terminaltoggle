@@ -1,0 +1,8 @@
+#!/bin/bash
+selfname=$(basename $0)
+gproc=$(ps aux | grep 'guake' | grep -v "$selfname" | grep -v 'grep')
+if [ -z "$gproc" ]; then
+  guake -e "guake -t;clear" &
+else
+  guake -t
+fi

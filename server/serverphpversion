@@ -1,0 +1,3 @@
+#!/bin/bash
+distribute exec "php -v" > /tmp/phpversion.txt 2>/dev/null
+cat /tmp/phpversion.txt | grep -v '\-\-\-\-\-' | grep -v Zend | grep -v Copyright | grep -v '^$' | sed -e's/distribute exec: SERVER://g' | sed -e's/ - COMMAND: php -v//g' | awk '{print $1,$2}' | sed 'N;s/\n/ /;'

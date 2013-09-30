@@ -1,0 +1,16 @@
+#!/bin/bash
+killall -9 conky
+rm -f ${HOME}/.conky/cache/*
+cd ${HOME}/.conky;
+if [ -e "${HOME}/.conky/top-left.rc" ]; then
+	conky -c ${HOME}/.conky/top-left.rc
+fi
+if [ -e "$HOME/.conky/bottom-left.rc" ]; then
+	conky -c ${HOME}/.conky/bottom-left.rc
+fi
+if [ -e "$HOME/.conky/top-right.rc" ]; then
+	conky -c ${HOME}/.conky/top-right.rc
+fi
+if [ -e "$HOME/.conky/bottom-right.rc" ]; then
+	conky -c ${HOME}/.conky/bottom-right.rc
+fi

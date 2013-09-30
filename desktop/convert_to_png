@@ -1,0 +1,4 @@
+#!/bin/bash
+ext=$(echo $1 | awk -F . '{print $NF}');
+fil=$(basename $1 .$ext);
+convert $1 $fil.png

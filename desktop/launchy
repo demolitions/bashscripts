@@ -1,0 +1,5 @@
+#!/bin/bash
+e=$(fbrun 2>&1 | sed 's/"/\\"/g');
+if [ -n "$e" ]; then
+	zenity --error --text="$e";
+fi

@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -n "$(ps ux | grep fluxbox | grep -v grep)" ]; then
+	${HOME}/Apps/shortcuts/_wallpaperchanger >>${HOME}/.logs/changebg.log 2>&1
+elif  [ -n "$(ps ux | grep xfce | grep -v grep)" ]; then
+	xfdesktop --reload >/dev/null 2>&1
+fi

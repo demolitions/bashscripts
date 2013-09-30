@@ -1,0 +1,22 @@
+#!/bin/bash
+scrot /tmp/grabscreen_out.png;
+if [ -n "$(which zenity)" ]; then
+	zenity --file-selection --filename=${HOME}/Capture.png --save --confirm-overwrite >/tmp/grabscreen_name 2>&1
+	FILEOUT=$(cat /tmp/grabscreen_name);
+	if [ -n "$FILEOUT" ]; then
+		mv /tmp/grabscreen_out.png $FILEOUT;
+	fi
+else
+	Xdialog --fselect ${HOME}/Capture.png 30 100 >/tmp/grabscreen_name 2>&1;
+	FILEOUT=$(cat /tmp/grabscreen_name);
+	if [ -n "$FILEOUT" ]; then
+		if [ -e "$FILEOUT" ]; then
+			RESP=$(Xdialog --yesno "$FILEOUT\nfile already present, overwrite?" 8 40);
+			if [ "$?" == "0" ]; then
+				mv /tmp/grabscreen_out.png $FILEOUT;
+			fi
+		else
+			mv /tmp/grabscreen_out.png $FILEOUT;
+		fi
+	fi
+fi

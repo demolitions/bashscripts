@@ -1,0 +1,4 @@
+#!/bin/bash
+user=$1;
+pass="cyb${user:0:3}$RANDOM";
+echo $pass;
