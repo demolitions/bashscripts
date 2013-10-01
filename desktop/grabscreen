@@ -1,22 +1,35 @@
 #!/bin/bash
-scrot /tmp/grabscreen_out.png;
-if [ -n "$(which zenity)" ]; then
-	zenity --file-selection --filename=${HOME}/Capture.png --save --confirm-overwrite >/tmp/grabscreen_name 2>&1
-	FILEOUT=$(cat /tmp/grabscreen_name);
-	if [ -n "$FILEOUT" ]; then
-		mv /tmp/grabscreen_out.png $FILEOUT;
-	fi
+BASEFILENAME="${HOME}/Capture.png";
+
+if [ -n "$(which scrot 2>/dev/null)" ]; then
+	scrot /tmp/grabscreen_out.png;
+elif [ -n "$(which imlib2_grab 2>/dev/null)" ]; then
+	imlib2_grab /tmp/grabscreen_out.png;
 else
-	Xdialog --fselect ${HOME}/Capture.png 30 100 >/tmp/grabscreen_name 2>&1;
-	FILEOUT=$(cat /tmp/grabscreen_name);
-	if [ -n "$FILEOUT" ]; then
-		if [ -e "$FILEOUT" ]; then
-			RESP=$(Xdialog --yesno "$FILEOUT\nfile already present, overwrite?" 8 40);
-			if [ "$?" == "0" ]; then
-				mv /tmp/grabscreen_out.png $FILEOUT;
+	echo "Cannot find a suitable screen shot program!";
+	exit 1;
+fi
+if [ -n "$1" ]; then
+	FILEOUT="$1";
+else
+	if [ -n "$(which zenity)" ]; then
+		zenity --file-selection --filename=${BASEFILENAME} --save --confirm-overwrite >/tmp/grabscreen_name 2>&1
+		FILEOUT="$(cat /tmp/grabscreen_name)";
+	else
+		Xdialog --fselect ${BASEFILENAME} 30 100 >/tmp/grabscreen_name 2>&1;
+		FILENAME="$(cat /tmp/grabscreen_name)";
+		if [ -n "$FILENAME" ]; then
+			if [ -e "$FILENAME" ]; then
+				RESP=$(Xdialog --yesno "$FILENAME\nfile already present, overwrite?" 8 40);
+				if [ "$?" == "0" ]; then
+					FILEOUT="$FILENAME";
+				fi
+			else
+				FILEOUT="$FILENAME";
 			fi
-		else
-			mv /tmp/grabscreen_out.png $FILEOUT;
 		fi
 	fi
+fi
+if [ -n "$FILEOUT" ]; then
+	mv /tmp/grabscreen_out.png $FILEOUT;
 fi

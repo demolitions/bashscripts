@@ -1,0 +1,1 @@
+watch -n0.5 "dmesg | tail"

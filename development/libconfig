@@ -1,0 +1,29 @@
+#!/bin/bash
+function Usage {
+	echo "$(basename $0) [--libs|--includes] LIBRARY [--all]"
+	echo
+	echo "        --libs     show ONLY linker libs (-l flag)"
+	echo "        --includes show ONLY compiler includes (-I flag)"
+	echo "        --all      show other flags than -l or -I"
+	echo 
+}
+
+if [ "$2" == "" ]; then 
+	Usage;
+else
+	if [ "$1" == "--includes" ]; then
+		if [ "$3" == "--all" ] ; then
+			pkg-config --cflags $2
+		else
+			pkg-config --cflags-only-I $2 | sed -e's/-I//g' | sed -e's/ /\n/g' | sort | uniq
+		fi
+	elif [ "$1" == "--libs" ]; then
+		if [ "$3" == "--all" ] ; then
+			pkg-config --libs $2
+		else
+			pkg-config --libs-only-l $2 | sed -e's/-l//g' | sed -e's/ /\n/g' | sort | uniq
+		fi
+	else
+		Usage;
+	fi
+fi
