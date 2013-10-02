@@ -1,0 +1,34 @@
+#!/bin/bash
+if [ "$#" -eq 2 ]; then
+	if [ -e "/etc/dynmount/${2}.conf" ]; then 
+		case "$1" in
+			"--enable")
+				echo "Applying ${2} configuration";
+				while read line; do
+					d=$(echo $line | awk '{print $2}');
+					echo "Preparing $d";
+					mkdir -p $d;
+					chmod 777 $d;
+				done < <(cat /etc/dynmount/${2}.conf | grep -v '^#');
+				cat /etc/dynmount/base.fstab > /etc/fstab;
+				cat /etc/dynmount/${2}.conf >> /etc/fstab;
+				;;
+			"--disable")
+				echo "Unapplying ${2} configuration";
+				while read line; do
+					d=$(echo $line | awk '{print $2}');
+					if [ -n "$(mount | grep "$d")" ]; then
+						echo "Unmounting $d";
+						umount -f $d;
+					fi
+				done < <(cat /etc/dynmount/${2}.conf | grep -v '^#');
+				cat /etc/dynmount/base.fstab > /etc/fstab;
+				;;
+		esac
+	fi
+else
+	if [ "$1" == "--install" ]; then
+		mkdir -p /etc/dynmount;
+		cat /etc/fstab > /etc/dynmount/base.fstab;
+	fi
+fi

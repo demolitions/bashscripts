@@ -1,1 +1,2 @@
+#!/bin/bash
 watch -n0.5 "dmesg | tail"
