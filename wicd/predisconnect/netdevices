@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "predisconnect-launch: $*" >> /var/log/wicd/netdevices.log;
+mac="$(cat /proc/net/arp | grep "^$(route -n | grep '^0' | awk '{print $2}') " | awk '{print $4}')";
+echo "predisconnect-parse : $1 $mac" >> /var/log/wicd/netdevices.log;
+if [ -n "$mac" ]; then  
+	while read line; do
+		if [ "$(echo $line | grep "$1 $mac")" ]; then
+			netcfg="$(echo $line | cut -d'=' -f2)";
+			echo "predisconnect-netcfg: $netcfg" >> /var/log/wicd/netdevices.log;
+			/usr/bin/netmount --disable $netcfg >> /var/log/wicd/netdevices.log;
+		fi
+	done < <(cat /etc/dynmount/alias.networks | grep -v '^#');
+else
+	/usr/bin/netmount --disable-all >> /var/log/wicd/netdevices.log;
+fi

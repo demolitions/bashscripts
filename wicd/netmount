@@ -12,6 +12,7 @@ if [ "$#" -eq 2 ]; then
 				done < <(cat /etc/dynmount/${2}.conf | grep -v '^#');
 				cat /etc/dynmount/base.fstab > /etc/fstab;
 				cat /etc/dynmount/${2}.conf >> /etc/fstab;
+				cat /etc/dynmount/${2}.conf > /etc/dynmount/current.fstab;
 				;;
 			"--disable")
 				echo "Unapplying ${2} configuration";
@@ -23,11 +24,23 @@ if [ "$#" -eq 2 ]; then
 					fi
 				done < <(cat /etc/dynmount/${2}.conf | grep -v '^#');
 				cat /etc/dynmount/base.fstab > /etc/fstab;
+				echo "" > /etc/dynmount/current.fstab;
 				;;
 		esac
 	fi
 else
-	if [ "$1" == "--install" ]; then
+	if [ "$1" == "--disable-all" ]; then
+		echo "Unapplying network configuration";
+		while read line; do
+			d=$(echo $line | awk '{print $2}');
+			if [ -n "$(mount | grep "$d")" ]; then
+				echo "Unmounting $d";
+				umount -f $d;
+			fi
+		done < <(cat /etc/dynmount/current.fstab | grep -v '^#');
+		cat /etc/dynmount/base.fstab > /etc/fstab;
+		echo "" > /etc/dynmount/current.fstab;
+	elif [ "$1" == "--install" ]; then
 		mkdir -p /etc/dynmount;
 		cat /etc/fstab > /etc/dynmount/base.fstab;
 	fi
