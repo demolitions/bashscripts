@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ "$1" == "" ]; then
+	echo "Usage: $0 IMAGEFILE";
+	exit 1;
+fi
+if [ -f "$1" ]; then 
+	tempfilename=${1##*/}
+	outfile=${tempfilename%%.*}
+	ffmpeg -vcodec png -i "$1" -vcodec rawvideo -f rawvideo -pix_fmt rgb565 "${outfile}.raw";
+else
+	echo "File not found";
+fi

@@ -1,0 +1,6 @@
+#!/bin/bash
+#Fetch Root's Dbus Variables and Run The Command
+dbsess=$(sudo ls /root/.dbus/session-bus/);
+/usr/bin/sudo $(/usr/bin/sudo sed '6q;d' /root/.dbus/session-bus/${dbsess}) \
+$(/usr/bin/sudo sed '7q;d' /root/.dbus/session-bus/${dbsess}) \
+$(/usr/bin/sudo sed '8q;d' /root/.dbus/session-bus/${dbsess}) "$@"
