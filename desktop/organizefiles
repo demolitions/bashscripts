@@ -1,0 +1,29 @@
+#!/bin/bash
+configfile="${HOME}/.config/organizefiles.conf";
+if [ "$1" == "--createconfig" ]; then
+	echo "#Automatically created configuration," > $configfile;
+	echo "#lines are parsed in precedence based on their position" >> $configfile;
+	echo "image/::$HOME/Pictures" >> $configfile;
+	echo "video/::$HOME/Videos" >> $configfile;
+	echo "audio/::$HOME/Music" >> $configfile;
+	echo "application/pdf::$HOME/Documents" >> $configfile;
+	echo "text/plain:.sh:$HOME/Shellscripts" >> $configfile;
+	echo "text/plain::$HOME/Documents" >> $configfile;
+	echo "Configuration file created";
+else
+	if [ -f $configfile ]; then
+		cat $configfile | grep -v '^#' | while read confline; do
+			#echo "----${confline}";
+			mimetype=$(echo $confline | cut -d':' -f1);
+			extension=$(echo $confline | cut -d':' -f2);
+			destination=$(echo $confline | cut -d':' -f3);
+			# recupero i files che mi interessano
+			file --mime-type * | grep "${mimetype}" | grep "${extension}:" | while read line; do 
+				nomefile=$(echo $line | cut -d':' -f1); 
+				mv ${nomefile} ${destination}/${nomefile}; 
+			done
+		done
+	else
+		echo "Missing configuration file, to use default config, launch $0 --createconfig";
+	fi
+fi
