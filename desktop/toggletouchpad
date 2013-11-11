@@ -1,0 +1,10 @@
+#!/bin/bash
+touchpadname="ETPS/2 Elantech Touchpad";
+enabled=$(xinput list-props "$touchpadname" | grep Enabled | cut -d':' -f2 | awk '{print $1}');
+if [ "$enabled" == "0" ]; then
+	xinput enable "$touchpadname";
+	echo "$touchpadname enabled";
+else
+	xinput disable "$touchpadname";
+	echo "$touchpadname disabled";
+fi
