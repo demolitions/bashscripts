@@ -33,17 +33,20 @@ if [ -f "$CONFIGFILE" ]; then
       echo $CONFIGFILE;
       ;;
     "serverlist")
-      cat $CONFIGFILE | grep -v '^#' | cut -d':' -f1 | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | cut -d':' -f1 | sed -e's/ //g';
       ;;
     "serverport")
-      cat $CONFIGFILE | grep -v '^#' | grep "^$2" | cut -d':' -f2 | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f2 | sed -e's/ //g';
       ;;
     "serveruser")
-      cat $CONFIGFILE | grep -v '^#' | grep "^$2" | cut -d':' -f3 | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f3 | sed -e's/ //g';
       ;;
     "serverpman")
-      cat $CONFIGFILE | grep -v '^#' | grep "^$2" | cut -d':' -f4 | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f4 | sed -e's/ //g';
       ;;
+    "update")
+	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates)";
+	  ;;
     *)
       echo "Uso: $(basename $0) [push|pull|exec]";
       ;;
