@@ -1,2 +1,9 @@
 #!/bin/bash
 xfconf-query --channel=xfwm4 --property=/general/use_compositing --type=bool --toggle
+stato=$(xfconf-query --channel=xfwm4 --property=/general/use_compositing);
+if [ "$stato" == "true" ]; then 
+	echo "Compositing enabled";
+else
+	sleep 1;
+	echo "Compositing disabled";
+fi

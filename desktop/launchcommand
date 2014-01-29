@@ -1,1 +1,2 @@
 #!/bin/bash
+notify-send -t 3 "$($1)";

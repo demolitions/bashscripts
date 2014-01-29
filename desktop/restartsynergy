@@ -3,4 +3,4 @@ while [ "$(ps aux | grep synergyc | grep -v grep)" != "" ]; do
 	sleep 0.5;
 	killall synergyc;
 done
-/usr/bin/synergyc --no-tray --debug NOTE --name cyberleandro 192.168.0.85:24800;
+/usr/bin/synergyc --no-tray --debug NOTE --name kowalski 192.168.0.87:24800;
