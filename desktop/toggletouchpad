@@ -1,6 +1,10 @@
 #!/bin/bash
+#touchpadname="SynPS/2 Synaptics TouchPad";
 #touchpadname="ETPS/2 Elantech Touchpad";
-touchpadname="PS/2 Elantech ETF1059 Click-Pad";
+#touchpadname="PS/2 Elantech ETF1059 Click-Pad";
+if [ -z "$touchpadname" ]; then
+	touchpadname=$(xinput list --name-only | grep -ie "touchpad" -ie "touch-pad" -ie "clickpad" -ie "click-pad");
+fi
 case "$1" in
   "enable")
     enabled="0";
