@@ -1,0 +1,7 @@
+#!/bin/bash
+dash=$(ps aux | grep xfdashboard | grep -v grep | wc -l);
+if [ "$dash" == "1" ]; then 
+	killall xfdashboard
+else 
+	xfdashboard
+fi

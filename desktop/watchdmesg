@@ -1,2 +1,8 @@
 #!/bin/bash
-watch -n0.5 "dmesg | tail"
+if [ "$1" == "" ]; then 
+  watch -n0.5 "dmesg | tail"
+else 
+  echo "<txt><span weight=\"bold\" fgcolor=\"Red\">                                 S y s t e m   l o g                                                                                                </span>"
+  dmesg | tail -n $1 | sed -e's/\[\([ 0-9\.]*\)\]/<span fgcolor="green">\[\1\]<\/span>/g'
+  echo "</txt>"
+fi

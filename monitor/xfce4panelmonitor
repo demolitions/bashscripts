@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "<txt><span weight=\"bold\" fgcolor=\"Red\">                                 S y s t e m   l o g                                                        </span>"$(date +"%Y-%m-%d %H:%I:%S")
+dmesg | tail -n 17 | sed -e's/\[\([ 0-9\.]*\)\]/<span fgcolor="green">\[\1\]<\/span>/g'
+echo "<span weight=\"bold\" fgcolor=\"Red\">                                 S y s t e m   m o n i t o r                                                                                                </span>"
+ps aux | grep -v "%CPU" | awk '{print $3 " " $4 " " $11}' | sort -nr | head -n10
+echo
+lanip=$(/home/leandro/bin/collectip lan);
+wanip=$(/home/leandro/bin/collectip wan);
+lantime=$(/home/leandro/bin/collectip oldlan);
+wantime=$(/home/leandro/bin/collectip oldwan);
+printf "<span weight=\"bold\" fgcolor=\"Red\">IP LAN: </span>%15s (Updated %5ds ago) <span weight=\"bold\" fgcolor=\"Red\">IP WAN: </span> %15s (Updated %5ds ago)\n" $lanip $lantime $wanip $wantime
+level=$(cat /sys/class/power_supply/BAT0/capacity);
+status=$(cat /sys/class/power_supply/BAT0/status);
+printf "<span weight=\"bold\" fgcolor=\"Red\">Battery: </span>%3s%% <span weight=\"bold\" fgcolor=\"Red\">Status: </span>%s\n" $level $status
+echo "</txt>"

@@ -1,0 +1,62 @@
+#!/bin/bash
+level=$(cat /sys/class/power_supply/BAT0/capacity);
+#level=${RANDOM:0:2};
+status=$(cat /sys/class/power_supply/BAT0/status);
+#status="Discharging";
+case $1 in
+	"chargetxt")
+		echo "${level}%";
+		;;
+	"charge")
+		if [ $level -eq 100 ]; then
+			imglv="18";
+		elif [ $level -gt 95 ]; then
+			imglv="17";
+		elif [ $level -gt 85 ]; then
+			imglv="16";
+		elif [ $level -gt 75 ]; then
+			imglv="15";
+		elif [ $level -gt 70 ]; then
+			imglv="14";
+		elif [ $level -gt 65 ]; then
+			imglv="13";
+		elif [ $level -gt 60 ]; then
+			imglv="12";
+		elif [ $level -gt 55 ]; then
+			imglv="11";
+		elif [ $level -gt 50 ]; then
+			imglv="10";
+		elif [ $level -gt 45 ]; then
+			imglv="09";
+		elif [ $level -gt 40 ]; then
+			imglv="08";
+		elif [ $level -gt 35 ]; then
+			imglv="07";
+		elif [ $level -gt 30 ]; then
+			imglv="06";
+		elif [ $level -gt 25 ]; then
+			imglv="05";
+		elif [ $level -gt 20 ]; then
+			imglv="04";
+		elif [ $level -gt 15 ]; then
+			imglv="03";
+		elif [ $level -gt 10 ]; then
+			imglv="02";
+		elif [ $level -gt 5 ]; then
+			imglv="01";
+		else
+			imglv="00";
+		fi
+		if [ "${status}" == "Charging" ]; then
+			imgst="c";
+		elif [ "${status}" == "Full" ]; then
+			imgst="c";
+		else 
+			imgst="";
+		fi
+		echo "<html><img src=\"/home/leandro/bin/batterytheme/${imgst}${imglv}.png\" width=\"24\" /></html>"
+		;;
+	"status")
+		echo "Level: ${level}%<br />Status: ${status}";
+		;;
+esac

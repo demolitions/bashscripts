@@ -1,0 +1,58 @@
+#!/bin/bash
+lantimeout=5
+wantimeout=50
+
+lantemp=/tmp/collectip_lan
+wantemp=/tmp/collectip_wan
+
+function oldfile {
+	file=$(stat -c %Y $1)
+	now=$(date +%s)
+	let time=$now-$file
+	echo $time
+}
+
+function collectwanip {
+	timeout 3 curl -s "http://www.alonerd.net/getip.php" > $wantemp
+}
+
+function collectlanip {
+	ip addr | grep 'inet ' | grep -v 'host lo' | awk '{print $2}' | cut -d'/' -f1 > $lantemp
+}
+
+
+if [ "$1" == "lan" ]; then
+	if [ -e $lantemp ]; then
+		cat $lantemp;
+		if [ $(oldfile $lantemp) -gt $lantimeout ]; then
+			collectlanip &
+		fi
+	else 
+		collectlanip &
+		echo "collecting..."
+	fi
+	exit 0;
+fi
+
+if [ "$1" == "wan" ]; then
+	if [ -e $wantemp ]; then
+		cat $wantemp;
+		if [ $(oldfile $wantemp) -gt $wantimeout ]; then
+			collectwanip &
+		fi
+	else 
+		collectwanip &
+		echo "collecting..."
+	fi
+	exit 0;
+fi
+
+if [ "$1" == "oldlan" ]; then
+	oldfile $lantemp
+	exit 0;
+fi
+
+if [ "$1" == "oldwan" ]; then
+	oldfile $wantemp
+	exit 0;
+fi
