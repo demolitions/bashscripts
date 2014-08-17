@@ -1,15 +1,36 @@
 #!/bin/bash
-echo "<txt><span weight=\"bold\" fgcolor=\"Red\">                                 S y s t e m   l o g                                                        </span>"$(date +"%Y-%m-%d %H:%I:%S")
-dmesg | tail -n 17 | sed -e's/\[\([ 0-9\.]*\)\]/<span fgcolor="green">\[\1\]<\/span>/g'
-echo "<span weight=\"bold\" fgcolor=\"Red\">                                 S y s t e m   m o n i t o r                                                                                                </span>"
+#rightpad=108;
+rightpad=126;
+function PrintTitolo {
+  if [ "$2" == "" ]; then
+    titlecolor="red";
+  else
+    titlecolor="$2";
+  fi
+  echo "<span weight=\"bold\" fgcolor=\"${titlecolor}\">$(/home/leandro/bin/rightalign "$1" $rightpad "=")</span>"
+}
+# System log
+echo "<txt><span fgcolor=\"white\">$(/home/leandro/bin/rightalign "$(date +"%Y-%m-%d %H:%I:%S")" $rightpad)";
+PrintTitolo "S y s t e m   l o g"
+dmesg | tail -n 17 | sed -e's/</\&lt;/g' | sed -e's/>/\&gt;/g' | sed -e's/\[\([ 0-9\.]*\)\]/<span fgcolor="green">\[\1\]<\/span>/g'
+# Process monitor
+PrintTitolo "P r o c e s s   m o n i t o r";
 ps aux | grep -v "%CPU" | awk '{print $3 " " $4 " " $11}' | sort -nr | head -n10
-echo
-lanip=$(/home/leandro/bin/collectip lan);
-wanip=$(/home/leandro/bin/collectip wan);
-lantime=$(/home/leandro/bin/collectip oldlan);
-wantime=$(/home/leandro/bin/collectip oldwan);
+# System monitor
+PrintTitolo "S y s t e m   m o n i t o r";
+lanip=$(~/bin/collectip lan);
+wanip=$(~/bin/collectip wan);
+lantime=$(~/bin/collectip oldlan);
+wantime=$(~/bin/collectip oldwan);
 printf "<span weight=\"bold\" fgcolor=\"Red\">IP LAN: </span>%15s (Updated %5ds ago) <span weight=\"bold\" fgcolor=\"Red\">IP WAN: </span> %15s (Updated %5ds ago)\n" $lanip $lantime $wanip $wantime
 level=$(cat /sys/class/power_supply/BAT0/capacity);
 status=$(cat /sys/class/power_supply/BAT0/status);
 printf "<span weight=\"bold\" fgcolor=\"Red\">Battery: </span>%3s%% <span weight=\"bold\" fgcolor=\"Red\">Status: </span>%s\n" $level $status
-echo "</txt>"
+# Disk usage
+PrintTitolo "D i s k   U s a g e"
+~/bin/diskmonitor sda5 Root
+~/bin/diskmonitor sda6 Home
+~/bin/diskmonitor sda3 Windows
+~/bin/diskmonitor sdb1 Dati
+# END
+echo "</span></txt>"

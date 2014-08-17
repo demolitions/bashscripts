@@ -1,0 +1,28 @@
+#!/bin/bash
+function PrintSize {
+  df -h | grep "$1" | awk '{print "Size: "$2}';
+}
+function PrintFree {
+  df -h | grep "$1" | awk '{print "Used: "$4}';
+}
+function PrintBar {
+  perc=$(df | grep "$1" | awk '{print $5}' | sed -e's/%//';);
+  bar="[";
+  for i in $(seq 0 10 100); do
+    if [ $perc -gt $i ]; then
+      bar="${bar}<span fgcolor=\"red\">*</span>";
+    else 
+      bar="${bar}<span fgcolor=\"gray\">-</span>";
+    fi
+  done
+  bar="${bar}]"
+  echo $bar;
+}
+function PrintDev {
+  df -h | grep "$1" | awk '{print $1}';
+}
+if [ $2 == "" ]; then
+  printf "%-15s %-12s %-12s %-12s\n" "$(PrintDev $1)" "$(PrintSize $1)" "$(PrintFree $1)" "$(PrintBar $1)"
+else 
+  printf "%-15s %-12s %-12s %-12s\n" "$2" "$(PrintSize $1)" "$(PrintFree $1)" "$(PrintBar $1)"
+fi
