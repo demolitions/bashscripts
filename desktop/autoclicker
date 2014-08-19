@@ -1,0 +1,63 @@
+#!/bin/bash
+function checkwindow {
+	rightwindow=$(xdotool getactivewindow getwindowname | grep "cookies - Cookie Clicker" | wc -l);
+	if [ "$rightwindow" == "0" ]; then
+		exit 0;
+	fi
+}
+function buyupgrade {
+	moveclick 182
+}
+function buycursor {
+	moveclick 250
+}
+function buygrandma {
+	moveclick 320
+}
+function buyfarm {
+	moveclick 390
+}
+function buyfactory {
+	moveclick 460
+}
+function buymine {
+	moveclick 510
+}
+function buyshipment {
+	moveclick 580
+}
+function buyalchemylab {
+	moveclick 640
+}
+function buyportal {
+	moveclick 710
+}
+function moveclick {
+	checkwindow;
+	xdotool mousemove 800 $1
+	sleep 0.1;
+	xdotool mousemove 1090 $1
+	sleep 0.1;
+	xdotool click 1;
+	sleep 0.1;
+}
+function clickcookie {
+	checkwindow;
+	xdotool mousemove 200 360
+	sleep 0.1;
+	xdotool click --repeat 1000 --delay 10 1
+	sleep 0.1;
+}
+sleep 1;
+while true; do
+	clickcookie;
+	buyupgrade;
+	buycursor;
+	buygrandma;
+	buyfarm;
+	buyfactory;
+	buymine;
+	buyshipment;
+	buyalchemylab;
+	buyportal;
+done
