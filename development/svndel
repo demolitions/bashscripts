@@ -1,8 +1,8 @@
 #!/bin/bash
 oldifs="$IFS";
 IFS=$'\n';
-for i in $(svn status | grep  '^?' | sed -e 's/^?[ ]*//'); do
+for i in $(svn status | grep  '^!' | sed -e 's/^![ ]*//'); do
 #for i in $(svn status | grep "?" | awk '{print $2}'); do 
-  svn add "$i";
+  svn del "$i";
 done
 IFS=$oldifs;

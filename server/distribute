@@ -29,6 +29,13 @@ if [ -f "$CONFIGFILE" ]; then
         distribute-exec "$2"
       fi
       ;;
+    "batch")
+      if [ "$2" == "" ]; then
+        echo "Uso: $(basename $0) $1 COMMAND";
+      else
+        distribute-batch "$2"
+      fi
+      ;;
     "distconfig")
       echo $CONFIGFILE;
       ;;
@@ -45,7 +52,13 @@ if [ -f "$CONFIGFILE" ]; then
       cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f4 | sed -e's/ //g';
       ;;
     "update")
-	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates)";
+	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates || /usr/lib64/nagios/plugins/check_updates)";
+	  ;;
+	"mtalist")
+	  distribute batch "ls -al /etc/alternatives/mta | cut -d'>' -f2 | cut -d'.' -f2";
+	  ;;
+	"smarthost")
+	  distribute-smarthost;
 	  ;;
     *)
       echo "Uso: $(basename $0) [push|pull|exec]";
