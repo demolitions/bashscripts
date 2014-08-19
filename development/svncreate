@@ -8,37 +8,37 @@ SVNCMD="svnadmin create";
 SRVURL="http://backup.cyb/svn-";
 
 function Usage {
-  echo "Uso: svncreate SVNPATH LOCALPATH [MESSAGE]";
+  echo "Uso: svncreate SVNPATH [LOCALPATH] [MESSAGE]";
   exit 0;
 }
 if [ "$1" == "" ]; then
   Usage;
-elif [ "$2" == "" ]; then
-  Usage;
 fi
 
 SVNPATH=$1;
-LCLPATH=$2;
-
-if [ "$3" == "" ]; then
-  MESSAGE="Importazione iniziale";
-else
-  MESSAGE=$3;
-fi
-
 ssh ${SRVUSER}@${SRVHOST} "cd ${SRVPATH}; ${SVNCMD} ${SVNPATH}; chown -R ${SVNUSER}.${SVNGRUP} ${SVNPATH};";
-mkdir /tmp/svncreate;
-mkdir /tmp/svncreate/trunk;
-mkdir /tmp/svncreate/tags;
-mkdir /tmp/svncreate/branches;
-cp -R ${LCLPATH}/* /tmp/svncreate/trunk/
-cd /tmp/svncreate
 
 SVNURL=${SRVURL}${SVNPATH};
 
-svn import ${SVNURL} -m "${MESSAGE}";
+if [ "$2" != "" ]; then
+	LCLPATH=$2;
+	if [ "$3" == "" ]; then
+	  MESSAGE="Importazione iniziale";
+	else
+	  MESSAGE=$3;
+	fi
 
-rm -fr /tmp/svncreate
+	mkdir /tmp/svncreate;
+	mkdir /tmp/svncreate/trunk;
+	mkdir /tmp/svncreate/tags;
+	mkdir /tmp/svncreate/branches;
+	cp -R ${LCLPATH}/* /tmp/svncreate/trunk/
+	cd /tmp/svncreate
+
+	svn import ${SVNURL} -m "${MESSAGE}";
+
+	rm -fr /tmp/svncreate
+fi
 
 echo "SVN creato su ${SRVHOST}.";
 echo "URL: ${SVNURL}";
