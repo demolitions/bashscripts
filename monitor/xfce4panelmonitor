@@ -1,6 +1,6 @@
 #!/bin/bash
-#rightpad=108;
-rightpad=126;
+rightpad=108;
+#rightpad=126;
 function PrintTitolo {
   if [ "$2" == "" ]; then
     titlecolor="red";
@@ -23,14 +23,10 @@ wanip=$(~/bin/collectip wan);
 lantime=$(~/bin/collectip oldlan);
 wantime=$(~/bin/collectip oldwan);
 printf "<span weight=\"bold\" fgcolor=\"Red\">IP LAN: </span>%15s (Updated %5ds ago) <span weight=\"bold\" fgcolor=\"Red\">IP WAN: </span> %15s (Updated %5ds ago)\n" $lanip $lantime $wanip $wantime
-level=$(cat /sys/class/power_supply/BAT0/capacity);
-status=$(cat /sys/class/power_supply/BAT0/status);
-printf "<span weight=\"bold\" fgcolor=\"Red\">Battery: </span>%3s%% <span weight=\"bold\" fgcolor=\"Red\">Status: </span>%s\n" $level $status
 # Disk usage
 PrintTitolo "D i s k   U s a g e"
-~/bin/diskmonitor sda5 Root
-~/bin/diskmonitor sda6 Home
-~/bin/diskmonitor sda3 Windows
-~/bin/diskmonitor sdb1 Dati
+~/bin/diskmonitor sda3 Root
+~/bin/diskmonitor sda4 Home
+~/bin/diskmonitor sda2 Boot
 # END
 echo "</span></txt>"
