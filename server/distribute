@@ -5,6 +5,13 @@ if [ -f "$USERCONFIG" ]; then
   CONFIGFILE="$USERCONFIG";
 fi
 
+FIELD_SVSHORT="2";
+FIELD_SERVER="3";
+FIELD_SSHPORT="4";
+FIELD_USER="5";
+FIELD_OS="6";
+
+
 if [ -f "$CONFIGFILE" ]; then
   # Configurazione trovata, procedo con la distribuzione
   case "$1" in
@@ -17,9 +24,9 @@ if [ -f "$CONFIGFILE" ]; then
       ;;
     "pull")
       if [ "$2" == "" ]; then
-        echo "Uso: $(basename $0) $1 REMOTEFILE [LOCALPATH]";
+        echo "Uso: $(basename $0) $1 REMOTEFILE";
       else
-        distribute-push "$2" "$3"
+        distribute-pull "$2"
       fi
       ;;
     "exec")
@@ -39,17 +46,48 @@ if [ -f "$CONFIGFILE" ]; then
     "distconfig")
       echo $CONFIGFILE;
       ;;
+    "serverconf")
+      srvconf="$(grep "^..s" ${CONFIGFILE} | grep ": ${2} " | sed -e's/ //g')";
+      case $3 in
+		'short')
+		  echo ${srvconf} | cut -d':' -f${FIELD_SVSHORT};
+		;;
+		'host')
+		  echo ${srvconf} | cut -d':' -f${FIELD_SERVER};
+		;;
+		'sshport')
+		  echo ${srvconf} | cut -d':' -f${FIELD_SSHPORT};
+		;;
+		'sshuser')
+		  echo ${srvconf} | cut -d':' -f${FIELD_USER};
+		;;
+		*)
+          echo ${srvconf};
+		;;
+      esac
+      ;;
     "serverlist")
-      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | cut -d':' -f1 | sed -e's/ //g';
+      if [ "$2" == "short" ]; then
+		cat $CONFIGFILE | grep '^d' | cut -d':' -f${FIELD_SVSHORT} | sed -e's/ //g';
+	  else 
+	    cat $CONFIGFILE | grep '^d' | cut -d':' -f${FIELD_SERVER} | sed -e's/ //g';
+	  fi
+      ;;
+    "apachelist")
+      if [ "$2" == "short" ]; then
+		cat $CONFIGFILE | grep '^dw' | cut -d':' -f${FIELD_SVSHORT} | sed -e's/ //g';
+	  else 
+        cat $CONFIGFILE | grep '^dw' | cut -d':' -f${FIELD_SERVER} | sed -e's/ //g';
+      fi
       ;;
     "serverport")
-      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f2 | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^d' | grep ": $2 " | cut -d':' -f${FIELD_SSHPORT} | sed -e's/ //g';
       ;;
     "serveruser")
-      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f3 | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^d' | grep ": $2 " | cut -d':' -f${FIELD_USER} | sed -e's/ //g';
       ;;
-    "serverpman")
-      cat $CONFIGFILE | grep '^[0-9a-zA-Z]' | grep "^$2" | cut -d':' -f4 | sed -e's/ //g';
+    "serveros")
+      cat $CONFIGFILE | grep '^d' | grep ": $2 " | cut -d':' -f${FIELD_OS} | sed -e's/ //g';
       ;;
     "update")
 	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates || /usr/lib64/nagios/plugins/check_updates)";
@@ -61,7 +99,11 @@ if [ -f "$CONFIGFILE" ]; then
 	  distribute-smarthost;
 	  ;;
     *)
-      echo "Uso: $(basename $0) [push|pull|exec]";
+	  options="";
+	  for line in $(cat $0 | grep "\")" | grep -v grep | awk '{print $1}' | sed -e 's/[")]//g'); do
+		options="${options}|${line}";
+	  done;
+      echo "Uso: $(basename $0) [${options#*|}]";
       ;;
   esac
 else

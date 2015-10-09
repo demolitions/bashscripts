@@ -1,13 +1,11 @@
 #!/bin/bash
 CONFIGFILE=$(distribute distconfig);
-LOCALFILE=$1;
-REMOTEFILE=$2;
 
 if [ -f "$CONFIGFILE" ]; then
   for SERVER in $(distribute serverlist); do
     SSHPORT=$(distribute serverport $SERVER);
     SSHUSER=$(distribute serveruser $SERVER);
-    echo "scp -P${SSHPORT} ${LOCALFILE} ${SSHUSER}@${SERVER}:${REMOTEFILE}"
-    scp -P${SSHPORT} ${LOCALFILE} ${SSHUSER}@${SERVER}:${REMOTEFILE}
+    SSHOUT=$(ssh ${SSHUSER}@${SERVER} -p${SSHPORT} "$1");
+    echo "$SERVER : ${SSHOUT}";
   done
 fi
