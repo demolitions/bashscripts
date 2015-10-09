@@ -1,7 +1,10 @@
 #!/bin/bash
-while [ "$(ps aux | grep synergyc | grep -v grep)" != "" ]; do
+while [ "$(ps aux | grep synergy[^.] | grep -v grep | grep -v restartsynergy)" != "" ]; do
 	sleep 0.5;
+	killall synergys;
 	killall synergyc;
+	killall synergy;
 done
-/usr/bin/synergyc --no-tray --debug NOTE --name kowalski 192.168.0.32:24800;
+#/usr/bin/synergyc --no-tray --debug NOTE --name cyberleandro -l /var/log/synergy.log 192.168.0.32:24800;
+/usr/bin/synergys --no-tray --debug NOTE -c /etc/synergy.cyber.conf -l /var/log/synergy.log;
 setxkbmap it

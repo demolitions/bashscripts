@@ -1,11 +1,11 @@
 #!/bin/bash
-SRVHOST="backup.cyb";
+SRVHOST="sviluppo.cyb";
 SRVUSER="root";
 SRVPATH="/var/www/svnrepos";
 SVNUSER="apache";
 SVNGRUP="apache";
 SVNCMD="svnadmin create";
-SRVURL="http://backup.cyb/svn-";
+SRVURL="http://sviluppo.cyb/svn-";
 
 function Usage {
   echo "Uso: svncreate SVNPATH [LOCALPATH] [MESSAGE]";

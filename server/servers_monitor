@@ -1,5 +1,15 @@
 #!/bin/bash
-for host in $(cat ~/.monitor/servers.lst); do
-  latency=$(latency ${host});
-  echo "${host}: ${latency}";
-done;
+times=$(cat /tmp/uptimeservers.times | wc -l);
+if [ $times -lt 5 ]; then
+  date +"%Y-%m-%d %H:%I:%S" >> /tmp/uptimeservers.times
+else
+  rm -f /tmp/uptimeservers
+  rm -f /tmp/uptimeservers.times
+  date +"%Y-%m-%d %H:%I:%S" >> /tmp/uptimeservers.times
+  for short in $(distribute serverlist short); do
+    host=$(distribute serverconf ${short} host);
+    latency=$(latency ${host});
+    uptime=$(sshx ${short} uptime | cut -d':' -f5);
+    echo "$(leftalign "${host}" 20): $(rightalign "${latency}" 8) : load average:${uptime}">>/tmp/uptimeservers;
+  done;
+fi

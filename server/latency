@@ -1,4 +1,4 @@
 #!/bin/bash
 if [ "$1" != "" ]; then
-  ping -c1 $1 | grep icmp | cut -d'=' -f4 
+  ping -c1 -W1 $1 | grep icmp | cut -d'=' -f4 
 fi
