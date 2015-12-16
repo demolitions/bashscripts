@@ -47,7 +47,7 @@ if [ -f "$CONFIGFILE" ]; then
       echo $CONFIGFILE;
       ;;
     "serverconf")
-      srvconf="$(grep "^..s" ${CONFIGFILE} | grep ": ${2} " | sed -e's/ //g')";
+      srvconf="$(grep "^..s" ${CONFIGFILE} | grep ":${2}:" | sed -e's/ //g')";
       case $3 in
 		'short')
 		  echo ${srvconf} | cut -d':' -f${FIELD_SVSHORT};
@@ -69,25 +69,25 @@ if [ -f "$CONFIGFILE" ]; then
     "serverlist")
       if [ "$2" == "short" ]; then
 		cat $CONFIGFILE | grep '^d' | cut -d':' -f${FIELD_SVSHORT} | sed -e's/ //g';
-	  else 
+	  else
 	    cat $CONFIGFILE | grep '^d' | cut -d':' -f${FIELD_SERVER} | sed -e's/ //g';
 	  fi
       ;;
     "apachelist")
       if [ "$2" == "short" ]; then
 		cat $CONFIGFILE | grep '^dw' | cut -d':' -f${FIELD_SVSHORT} | sed -e's/ //g';
-	  else 
+	  else
         cat $CONFIGFILE | grep '^dw' | cut -d':' -f${FIELD_SERVER} | sed -e's/ //g';
       fi
       ;;
     "serverport")
-      cat $CONFIGFILE | grep '^d' | grep ": $2 " | cut -d':' -f${FIELD_SSHPORT} | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_SSHPORT} | sed -e's/ //g';
       ;;
     "serveruser")
-      cat $CONFIGFILE | grep '^d' | grep ": $2 " | cut -d':' -f${FIELD_USER} | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_USER} | sed -e's/ //g';
       ;;
     "serveros")
-      cat $CONFIGFILE | grep '^d' | grep ": $2 " | cut -d':' -f${FIELD_OS} | sed -e's/ //g';
+      cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_OS} | sed -e's/ //g';
       ;;
     "update")
 	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates || /usr/lib64/nagios/plugins/check_updates)";
