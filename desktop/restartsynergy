@@ -5,6 +5,6 @@ while [ "$(ps aux | grep synergy[^.] | grep -v grep | grep -v restartsynergy)" !
 	killall synergyc;
 	killall synergy;
 done
+setxkbmap it
 #/usr/bin/synergyc --no-tray --debug NOTE --name cyberleandro -l /var/log/synergy.log 192.168.0.32:24800;
 /usr/bin/synergys --no-tray --debug NOTE -c /etc/synergy.cyber.conf -l /var/log/synergy.log;
-setxkbmap it
