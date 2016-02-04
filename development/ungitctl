@@ -1,0 +1,29 @@
+#!/bin/bash
+case "$1" in
+	"start")
+		screeninstance=$(screen -ls | grep -w ungit);
+		if [ -n "${screeninstance}" ]; then
+			zenity --info --text "UnGit già in esecuzione.";
+			exit 0;
+		fi
+
+		ungitinstance=$(ps aux | grep -w ungit | grep node);
+		if [ -n "${ungitinstance}" ]; then
+			zenity --info --text "UnGit già in esecuzione.";
+			exit 0;
+		fi
+
+		screen -dmS ungit ungit;;
+	"stop")
+		while [ -n "$(screen -ls | grep -w ungit)" ]; do
+			screen -S ungit -X stuff $'\003';
+		done;;
+	"status")
+		if [ -n "$(screen -ls | grep -w ungit)" ]; then
+			echo "ungit: Running";
+		else
+			echo "ungit: Stopped";
+		fi;;
+	*)
+		echo "Usage: $0 [start|stop|status]";;
+esac

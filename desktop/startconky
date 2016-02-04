@@ -2,7 +2,7 @@
 if [ "$1" == "--onlykill" ]; then
 	killall -9 conky
 else 
-	while [ "$(ps aux | grep xfdesktop | grep -v "grep")" == "" ]; do
+	while [ "$(ps aux | grep -e "xfdesktop" -e "plasma-desktop" | grep -v "grep")" == "" ]; do
 		sleep 0.2;
 	done;
 	killall -9 conky
