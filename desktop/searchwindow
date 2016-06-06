@@ -1,0 +1,20 @@
+#!/bin/bash
+terminals="terminology
+xfce4-terminal
+cool-retro-term
+xterm";
+terminalwin="";
+for term in ${terminals}; do
+	terminalwin=$(printf "%s\n%s" "${terminalwin}" "$(xdotool search --class "${term}" 2>/dev/null)");
+done
+for win in $terminalwin; do
+	geometry=$(xdotool getwindowgeometry $win);
+	printf "%s\n" "$geometry";
+	printf "  PID: %s\n" "$(xdotool getwindowpid $win)";
+	printf "  Handle: %s\n" "$win";
+	printf "  Name: %s\n\n" "$(xdotool getwindowname $win)";
+
+	size=$(echo $geometry | cut -d':' -f4);
+	echo $size;
+	echo ""
+done

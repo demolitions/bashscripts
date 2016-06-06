@@ -1,0 +1,34 @@
+#!/bin/bash
+terminals="terminology
+xfce4-terminal
+cool-retro-term
+xterm";
+for term in ${terminals}; do
+	terminalwins+="$(xdotool search --class "${term}" 2>/dev/null)
+";
+done
+for win in $(echo ${terminalwins} | grep -v '^$'); do
+	size=$(xdotool getwindowgeometry $win | grep 'Geometry' | cut -d':' -f2 | awk '{print $1}');
+	if [ "$size" != "10x10" ]; then
+		terminalwin+="$win
+";
+	fi
+done;
+if [ "$terminalwin" != "" ]; then
+	# we have terminal windows open, let's try to raise one, or minimize the current
+	focusedwindow=$(xdotool getactivewindow);
+	for win in ${terminalwin}; do
+		if [ "$win" == "${focusedwindow}" ]; then
+			# active window is a terminal, minimize it and exit
+			xdotool windowminimize $win;
+			exit 0;
+		fi
+	done;
+	# if we reach here, no terminal is the active window
+	focuswin=$(echo "${terminalwin}" | grep -v '^$' | head -n1);
+	xdotool windowactivate ${focuswin};
+else
+	wantterm=$(echo "$terminals" | grep -v '^$' | head -n1);
+	$wantterm
+fi
+

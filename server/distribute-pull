@@ -1,0 +1,13 @@
+#!/bin/bash
+CONFIGFILE=$(distribute distconfig);
+REMOTEFILE=$1;
+FILENAME=$(basename $REMOTEFILE);
+
+if [ -f "$CONFIGFILE" ]; then
+  for SERVER in $(distribute serverlist); do
+    SSHPORT=$(distribute serverport $SERVER);
+    SSHUSER=$(distribute serveruser $SERVER);
+    echo "scp -P${SSHPORT} ${SSHUSER}@${SERVER}:${REMOTEFILE} ${SERVER}.${FILENAME}"
+    scp -P${SSHPORT} ${SSHUSER}@${SERVER}:${REMOTEFILE} ${SERVER}.${FILENAME}
+  done
+fi

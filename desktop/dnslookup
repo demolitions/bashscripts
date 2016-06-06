@@ -1,0 +1,20 @@
+#!/bin/bash
+# restore terminal cursor and colors in the case of interruption
+if [ -t 1 ] ; then
+  trap 'echo -en "\E[?25h"; echo -en "\E[0m"; stty echo;' TERM EXIT
+  c_line=$(tput setf 3);
+  c_base=$(tput sgr0);
+  c_norec=$(tput setf 4);
+  c_res=$(tput setf 2);
+else
+  c_line="";
+  c_base="";
+  c_norec="";
+  c_res="";
+fi
+res=$(host $1 | grep 'has address' | awk '{print $4}')
+if [ "$res" == "" ]; then
+  echo "${c_line}$1${c_base} : ${c_norec}NO RECORD FOUND${c_base}";
+else
+  echo "${c_line}$1${c_base} : ${c_res}$res${c_base}";
+fi

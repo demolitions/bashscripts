@@ -1,0 +1,22 @@
+#!/bin/bash
+WHOAMI=$(whoami | tr -d "\n");
+if [ "$WHOAMI" == "root" ]; then
+	if [ -z "$1" ]; then
+		echo "No file or directory argument";
+		echo "Usage: xscanav /path/to/file";
+		exit 1;
+	fi
+	#starts clam av
+	systemctl start clamd;
+	systemctl status clamd;
+	#pdates clamav
+	freshclam;
+	#execute scan
+	for file in $@; do
+		echo "Scanning $file ...";
+		clamscan -r -i --exclude-dir='^/sys|^/proc|^/dev|^/lib|^/bin|^/sbin' $file;
+	done
+	
+else
+	echo "Only root can do this";
+fi

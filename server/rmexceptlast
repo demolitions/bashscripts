@@ -1,0 +1,13 @@
+#!/bin/bash
+LAST=6
+for i in $(find . -maxdepth 1 -mindepth 1 -type d); do 
+	f=$(ls -l $i | wc -l); 
+	if [ $f -gt 6 ]; then 
+		echo $i; 
+		cd $i;
+		for t in $(ls *.tgz | sort -nr | awk "NR>$LAST"); do
+			rm -f $t;
+		done
+		cd ..;
+	fi; 
+done
