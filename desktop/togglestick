@@ -1,0 +1,22 @@
+#!/bin/bash
+if [ -z "$stickname" ]; then
+	stickname=$(xinput list --name-only | grep -ie "stick");
+fi
+case "$1" in
+  "enable")
+    enabled="0";
+    ;;
+  "disable")
+    enabled="1";
+    ;;
+  *)
+    enabled=$(xinput list-props "$stickname" | grep Enabled | cut -d':' -f2 | awk '{print $1}');
+    ;;
+esac
+if [ "$enabled" == "0" ]; then
+	xinput enable "$stickname";
+	echo "$stickname enabled";
+else
+	xinput disable "$stickname";
+	echo "$stickname disabled";
+fi

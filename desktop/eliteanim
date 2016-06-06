@@ -1,0 +1,19 @@
+#!/bin/bash
+case $1 in
+	"mov")
+		bin/getcurrentresolution | read xres yres;
+		nice -n 15 xwinwrap -ni -nf -b -st -sp -s -fs -o 1.000000 -- mplayer $HOME/.eliteanim/elite.mp4 -quiet -loop 0 -nosound -fs -zoom -x $xres -y $yres -wid WID;
+		;;
+	"gif")
+		nice -n 15 xwinwrap -ni -nf -b -st -sp -s -fs -o 1.000000 -- gifview -w WID $HOME/.eliteanim/elite.gif -a 
+		;;
+	"for")
+		sce=$(bin/getactivescreen);
+		while (true); do
+			for i in $HOME/.eliteanim/png/*; do
+				xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor${sce}/workspace0/last-image -s ${i};
+				sleep 0.1;
+			done;
+		done;
+		;;
+esac

@@ -1,0 +1,12 @@
+#!/bin/bash
+dirs="desktop development monitor";
+for d in $dirs; do
+  for f in $(find $d -maxdepth 1 -type f); do 
+    of=$(pwd)/$f; 
+    df=$HOME/bin/$(basename $f);
+    if [ -L "$df" ]; then
+	  rm -f $df;
+    fi
+    ln -s $of $df;
+  done
+done

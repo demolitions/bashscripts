@@ -1,47 +1,66 @@
 #!/bin/bash
-if [ "$#" -eq 2 ]; then
-	if [ -e "/etc/dynmount/${2}.conf" ]; then 
-		case "$1" in
-			"--enable")
-				echo "Applying ${2} configuration";
-				while read line; do
-					d=$(echo $line | awk '{print $2}');
-					echo "Preparing $d";
-					mkdir -p $d;
-					chmod 777 $d;
-				done < <(cat /etc/dynmount/${2}.conf | grep -v '^#');
-				cat /etc/dynmount/base.fstab > /etc/fstab;
-				cat /etc/dynmount/${2}.conf >> /etc/fstab;
-				cat /etc/dynmount/${2}.conf > /etc/dynmount/current.fstab;
-				;;
-			"--disable")
-				echo "Unapplying ${2} configuration";
-				while read line; do
-					d=$(echo $line | awk '{print $2}');
-					if [ -n "$(mount | grep "$d")" ]; then
-						echo "Unmounting $d";
-						umount -f $d;
-					fi
-				done < <(cat /etc/dynmount/${2}.conf | grep -v '^#');
-				cat /etc/dynmount/base.fstab > /etc/fstab;
-				echo "" > /etc/dynmount/current.fstab;
-				;;
-		esac
-	fi
-else
-	if [ "$1" == "--disable-all" ]; then
-		echo "Unapplying network configuration";
-		while read line; do
-			d=$(echo $line | awk '{print $2}');
-			if [ -n "$(mount | grep "$d")" ]; then
-				echo "Unmounting $d";
-				umount -f $d;
+if [ "$1" == "disable" ]; then
+	echo "Unapplying network configuration";
+	while read line; do
+		d=$(echo $line | awk '{print $2}');
+		if [ -n "$(mount | grep "$d")" ]; then
+			echo "Unmounting $d";
+			umount -f $d;
+		fi
+	done < <(cat /etc/dynmount/_current.fstab | grep -v '^#'| grep -v '^$');
+	# hosts customization
+	cat /etc/dynmount/base.hosts > /etc/hosts;
+	echo "" > /etc/dynmount/_current.hosts;
+	# fstab customization
+	cat /etc/dynmount/base.fstab > /etc/fstab;
+	echo "" > /etc/dynmount/_current.fstab;
+fi
+
+if [ "$1" == "enable" ]; then
+	netcfg="";
+	echo "netmount: detecting SSID";
+	ssid="$(iwconfig 2>/dev/null| grep "ESSID" | grep -v 'off/any' | cut -d':' -f2 | sed -e's/[^0-9a-zA-Z_-]//g')";
+	if [ -n "$ssid" ]; then
+		echo "netmount: SSID detected: $ssid";
+		for cf in /etc/dynmount/*.conf; do
+			check="$(cat ${cf} | grep "SSID=${ssid}")";
+			if [ -n "$check" ]; then
+				netcfg=${cf};
 			fi
-		done < <(cat /etc/dynmount/current.fstab | grep -v '^#');
-		cat /etc/dynmount/base.fstab > /etc/fstab;
-		echo "" > /etc/dynmount/current.fstab;
-	elif [ "$1" == "--install" ]; then
-		mkdir -p /etc/dynmount;
-		cat /etc/fstab > /etc/dynmount/base.fstab;
+		done
+	fi
+	if [ -n "${netcfg}" ]; then
+		echo "netmount: SSID not found, detecting MAC address";
+		mac="$(iwconfig 2>/dev/null | grep "Access Point" | grep -v 'Not-Associated' | awk '{print $6}')";
+		echo "netmount: MAC detected: $mac";
+		if [ -n "$mac" ]; then
+			for cf in /etc/dynmount/*.conf; do
+				check="$(cat ${cf} | grep "MAC=${mac}")";
+				if [ -n "$check" ]; then
+					netcfg=${cf};
+				fi
+			done
+		fi
+	fi
+	if [ -n "${netcfg}" ]; then
+		cfgname=$(basename ${netcfg});
+		echo "Applying network configuration: ${cfgname}";
+		# cleaning any previous customization
+		$0 disable >/dev/null
+		# hosts customization
+		while read line; do
+			echo ${line#*=} >> /etc/hosts;
+			echo ${line#*=} >> /etc/dynmount/_current.hosts;
+		done < <(cat ${netcfg} | grep '^HOSTS=');
+		# fstab customization
+		while read line; do
+			mnt=${line#*=};
+			mntpoint="$(echo "${mnt}" | awk '{print $2}')";
+			echo "Preparing directory ${mntpoint}";
+			mkdir -p ${mntpoint};
+			chmod 777 ${mntpoint};
+			echo ${mnt} >> /etc/fstab;
+			echo ${mnt} >> /etc/dynmount/_current.fstab;
+		done < <(cat ${netcfg} | grep '^FSTAB=');
 	fi
 fi
