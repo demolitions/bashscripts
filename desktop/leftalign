@@ -1,0 +1,16 @@
+#!/bin/bash
+if [ "$3" != "" ]; then
+  padchar="$3";
+else
+  padchar=" ";
+fi
+if [ "$2" != "" ]; then
+  padlen=$2;
+else
+  padlen=60;
+fi
+
+string2="$1"
+echo -n "$string2 "
+for ((i=0; i< (${padlen} - ${#string2}); i++)){ echo -n "$padchar"; }
+echo -e ""

@@ -1,0 +1,44 @@
+#!/bin/bash
+function Usage {
+	scriptname=$(basename "$0");
+	echo "${scriptname}: USAGE:";
+	echo "${scriptname} SSHORIGIN SSHDEST FILEPATH";
+}
+if [ "$3" == "" ]; then
+	Usage;
+else
+	srcHost="$1";
+	dstHost="$2";
+	filePath="$3";
+	fileName="$(basename "${filePath}")";
+	scp ${srcHost}:${filePath} /tmp/${srcHost}.${fileName};
+	scp ${dstHost}:${filePath} /tmp/${dstHost}.${fileName};
+	cp /tmp/${srcHost}.${fileName} /tmp/orig.${srcHost}.${fileName};
+	cp /tmp/${dstHost}.${fileName} /tmp/orig.${dstHost}.${fileName};
+	vimdiff /tmp/${srcHost}.${fileName} /tmp/${dstHost}.${fileName};
+
+	if [ "$(diff /tmp/orig.${srcHost}.${fileName} /tmp/${srcHost}.${fileName})" != "" ]; then
+		while true; do
+			read -p "Source file has been modified: reupload in ${srcHost}:${filePath} (y/n)? " yn
+			case $yn in
+				[Yy]* ) scp /tmp/${srcHost}.${fileName} ${srcHost}:${filePath}; break;;
+				[Nn]* ) break;;
+			esac
+		done
+	fi
+
+	if [ "$(diff /tmp/orig.${dstHost}.${fileName} /tmp/${dstHost}.${fileName})" != "" ]; then
+		while true; do
+			read -p "Destination file has been modified: reupload in ${dstHost}:${filePath} (y/n)? " yn
+			case $yn in
+				[Yy]* ) scp /tmp/${dstHost}.${fileName} ${dstHost}:${filePath}; break;;
+				[Nn]* ) break;;
+			esac
+		done
+	fi
+
+	rm -f /tmp/${srcHost}.${fileName};
+	rm -f /tmp/orig.${srcHost}.${fileName};
+	rm -f /tmp/${dstHost}.${fileName};
+	rm -f /tmp/orig.${dstHost}.${fileName};
+fi

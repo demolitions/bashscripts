@@ -1,0 +1,4 @@
+#!/bin/bash
+for col in {0..7}; do
+  echo "$col:$(tput setf $col)COLOR$(tput sgr0)  $(tput setb 7)$(tput setf $col)COLOR$(tput sgr0)";
+done

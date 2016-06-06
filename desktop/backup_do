@@ -1,0 +1,30 @@
+#!/bin/bash
+
+mount network/nasse/backup
+
+BFROM=/home/leandro/Backup
+BTO=/home/leandro/network/nasse/backup/Leandro/LinuxPC
+dt=$(date +%Y%m%d-%H%M%S)
+
+#Execute backup
+lastbackup=$(cat ${BTO}/lastbackup 2>/dev/null)
+echo "Last backup:"
+echo ${lastbackup}
+if [ "${lastbackup}" != "" ]; then
+	# incremental backup
+	lastsec=$(date +%s -d "${lastbackup}")
+	currsec=$(date +%s)
+	diffmin=$(echo "(${lastsec} - ${currsec})/60" | bc)
+	filelist=$(find ${BFROM} -follow -mmin ${diffmin})
+else
+	# full backup
+	for dir in ${BFROM}/*; do
+		dirname=$(basename ${dir});
+		bname="${dirname}.tar.gz";
+		echo "Backing up ${dir} as ${bname}...";
+		#echo "tar -czhf ${BTO}/${bname} -C ${BFROM} ${dirname}";
+		tar -czhf ${BTO}/${bname} -C ${BFROM} ${dirname}
+		sleep 1;
+		echo "Backed up $(du -sLkh ${dir} | awk '{print $1}') in $(du -sLkh "${BTO}/${bname}" | awk '{print $1}')";
+	done
+fi

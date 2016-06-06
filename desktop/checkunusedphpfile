@@ -1,0 +1,11 @@
+#!/bin/bash
+oldifs="$IFS";
+IFS=$'\n';
+for i in $(find -type f -iname '*.php'); do
+	nomefile=$(basename ${i});
+	found=$(grep -Rl "${nomefile}" *);
+	if [ "${found}" == "" ]; then 
+		echo "${i} non incluso esplicitamente";
+	fi 
+done
+IFS=$oldifs;
