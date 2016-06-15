@@ -18,14 +18,14 @@ if [ "$1" == "" ]; then
 fi
 
 SVNPATH=$1;
-ssh ${SRVUSER}@${SRVHOST} "cd ${SRVPATH}; ${SVNCMD} ${SVNPATH}; chown -R ${SVNUSER}.${SVNGRUP} ${SVNPATH};";
+ssh ${SRVUSER}@${SRVHOST} "cd ${SRVPATH}; ${SVNCMD} ${SVNPATH}; chown -R ${SVNUSER}.${SVNGRUP} ${SVNPATH}; ln -s ${SRVPATH}/post-commit ${SRVPATH}/${SVNPATH}/hooks/";
 
 SVNURL=${SRVURL}${SVNPATH};
 
 if [ "$2" != "" ]; then
 	LCLPATH=$2;
 	if [ "$3" == "" ]; then
-	  MESSAGE="Importazione iniziale";
+	  MESSAGE="Creazione Repository";
 	else
 	  MESSAGE=$3;
 	fi

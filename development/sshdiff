@@ -1,4 +1,8 @@
 #!/bin/bash
+DIFFTOOL="meld";
+if [ "$(which ${DIFFTOOL})" == "" ]; then
+	DIFFTOOL="vimdiff";
+fi
 function Usage {
 	scriptname=$(basename "$0");
 	echo "${scriptname}: USAGE:";
@@ -15,7 +19,7 @@ else
 	scp ${dstHost}:${filePath} /tmp/${dstHost}.${fileName};
 	cp /tmp/${srcHost}.${fileName} /tmp/orig.${srcHost}.${fileName};
 	cp /tmp/${dstHost}.${fileName} /tmp/orig.${dstHost}.${fileName};
-	vimdiff /tmp/${srcHost}.${fileName} /tmp/${dstHost}.${fileName};
+	${DIFFTOOL} /tmp/${srcHost}.${fileName} /tmp/${dstHost}.${fileName};
 
 	if [ "$(diff /tmp/orig.${srcHost}.${fileName} /tmp/${srcHost}.${fileName})" != "" ]; then
 		while true; do

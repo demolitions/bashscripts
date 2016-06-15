@@ -1,7 +1,7 @@
 #!/bin/bash
-terminals="terminology
+terminals="cool-retro-term
+terminology
 xfce4-terminal
-cool-retro-term
 xterm";
 for term in ${terminals}; do
 	terminalwins+="$(xdotool search --class "${term}" 2>/dev/null)

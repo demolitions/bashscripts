@@ -89,8 +89,8 @@ if [ -f "$CONFIGFILE" ]; then
     "serveros") # Prints the OS field from the distribute list
       cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_OS} | sed -e's/ //g';
       ;;
-    "update") # Update servers
-	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates || /usr/lib64/nagios/plugins/check_updates)";
+    "update")
+	  distribute exec "yum -y update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates || /usr/lib64/nagios/plugins/check_updates)";
 	  ;;
 	"mtalist") # Recover the MTA setting from the servers
 	  distribute batch "ls -al /etc/alternatives/mta | cut -d'>' -f2 | cut -d'.' -f2";
@@ -109,6 +109,15 @@ if [ -f "$CONFIGFILE" ]; then
 	  ;;
 	"countmem") # Returns a count of the total RAM in gigabytes from the servers
 	  distribute batch "free -g | grep '^Mem' | awk '{print \$2 +1}'";
+	"versions")
+	  distribute-versions;
+	  ;;
+	"addhost")
+      if [ "$2" == "" ] || [ "$3" == "" ]; then
+        echo "Uso: $(basename $0) $1 HOSTNAME IP";
+      else
+        distribute-addhost "$2" "$3";
+      fi
 	  ;;
     *)
 	  options="";

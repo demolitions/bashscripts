@@ -10,7 +10,7 @@ window_icon="/usr/share/icons/Tango/scalable/actions/search.svg"
 # this script will work for any environment that has bash and zenity, so the filemanager is entirely down to you! you can add extra arguments to the string as long as the last argument is the path of the folder you open
 filemanager="thunar"
 
-dialog="matedialog"
+dialog="zenity"
 
 window_title="Search for Files"
 

@@ -1,3 +1,62 @@
 #!/bin/bash
-cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1
+function Usage() {
+  echo "Uso: $(basename $0) [-h] [-p] [-w] [-l LENGTH] [-n NUMBER]";
+  echo "      -p           Use also punctuation symbols";
+  echo "      -l LENGTH    Single password character count (length)";
+  echo "      -w LENGTH    Use words (and how many) instead of characters";
+  echo "      -n NUMBER    Number of passwords to be generated";
+  echo "      -h           Show this help message";
+  echo ""
+}
 
+pattern='abcdefghimnpqrstuvwxyzABCDEFGHLMNPQRTUVWXY2346789'
+mode="chars"
+length=16
+number=1
+
+while getopts "hpw:l:n:" OPTION; do
+  case $OPTION in
+  h)
+    Usage
+    exit 0
+    ;;
+  w)
+    mode="words"
+    length=$OPTARG
+    ;;
+  l)
+    length=$OPTARG
+    ;;
+  n)
+    number=$OPTARG
+    ;;
+  p)
+    pattern='abcdefghimnpqrstuvwxyzABCDEFGHLMNPQRTUVWXY2346789#!^_.,:;-'
+    ;;
+  ?)
+    Usage
+    exit 1
+    ;;
+  esac
+done
+
+for j in $(seq 1 $number); do
+  case "$mode" in
+  "chars")
+    cat /dev/urandom | tr -dc $pattern | fold -w $length | head -n 1
+    ;;
+  "words")
+    WORDFILE=/usr/share/dict/cracklib-small
+    # seed random from nanoseconds
+    RANDOM=$(date +%N);
+    words=""
+    for i in $(seq 1 $length); do
+      # using cat means wc outputs only a number, not number followed by filename
+      lines=$(cat $WORDFILE | wc -l)
+      rnum=$((RANDOM * RANDOM % $lines + 1))
+      words="$words $(sed -n "$rnum p" $WORDFILE)"
+    done
+    echo $words
+    ;;
+  esac
+done

@@ -18,6 +18,8 @@ case "$1" in
 esac
 if [ "$enabled" == "0" ]; then
 	xinput enable "$touchpadname";
+	# Specific to my touchpad, enable tap to click
+	xfconf-query -c pointers -p /FocalTechPS2_FocalTech_Touchpad/Properties/Synaptics_Tap_Action -s 0 -s 0 -s 0 -s 0 -s 1 -s 3 -s 2
 	echo "$touchpadname enabled";
 else
 	xinput disable "$touchpadname";

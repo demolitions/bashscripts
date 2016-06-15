@@ -31,7 +31,7 @@ if [ "$1" == "enable" ]; then
 	fi
 	if [ -n "${netcfg}" ]; then
 		echo "netmount: SSID not found, detecting MAC address";
-		mac="$(iwconfig 2>/dev/null | grep "Access Point" | grep -v 'Not-Associated' | awk '{print $6}')";
+		mac="$(arp | grep gateway | awk '{print $3}')";
 		echo "netmount: MAC detected: $mac";
 		if [ -n "$mac" ]; then
 			for cf in /etc/dynmount/*.conf; do
@@ -62,5 +62,14 @@ if [ "$1" == "enable" ]; then
 			echo ${mnt} >> /etc/fstab;
 			echo ${mnt} >> /etc/dynmount/_current.fstab;
 		done < <(cat ${netcfg} | grep '^FSTAB=');
+	fi
+fi
+
+if [ "$1" == "" ]; then
+	echo $0;
+	if [ $(nmcli d | grep -e "ethernet" -e "wifi" | grep -v "unmanaged" | grep -v "disconnected" | wc -l) -eq 0 ]; then
+		$0 disable;
+	else
+		$0 enable;
 	fi
 fi
