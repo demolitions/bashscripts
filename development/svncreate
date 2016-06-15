@@ -9,6 +9,8 @@ SRVURL="http://sviluppo.cyb/svn-";
 
 function Usage {
   echo "Uso: svncreate SVNPATH [LOCALPATH] [MESSAGE]";
+  echo "or";
+  echo "     svncreate SVNPATH [ZIPFILE] [MESSAGE]";
   exit 0;
 }
 if [ "$1" == "" ]; then
@@ -32,7 +34,11 @@ if [ "$2" != "" ]; then
 	mkdir /tmp/svncreate/trunk;
 	mkdir /tmp/svncreate/tags;
 	mkdir /tmp/svncreate/branches;
-	cp -R ${LCLPATH}/* /tmp/svncreate/trunk/
+	if [ "${LCLPATH:(-4)}" == ".zip" ]; then
+		unzip ${LCLPATH} -d /tmp/svncreate/trunk/
+	else
+		cp -R ${LCLPATH}/* /tmp/svncreate/trunk/
+	fi
 	cd /tmp/svncreate
 
 	svn import ${SVNURL} -m "${MESSAGE}";
