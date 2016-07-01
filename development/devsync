@@ -1,0 +1,19 @@
+#!/bin/bash
+prj_path="$(pwd)";
+if [ -e "${prj_path}/sync.conf" ]; then
+	source "${prj_path}/sync.conf";
+	file_path="/${2/${prj_path}/}/";
+	local_full_path="$(echo "${prj_path}${file_path}${3}" | awk '{while(index($1,"/./")) gsub("/./","/"); while(index($1,"//")) gsub("//","/");  print $1;}')";
+	local_full_path="${local_full_path/\/\//\/}";
+	remote_full_path="$(echo "${remote_path}${file_path}${3}" | awk '{while(index($1,"/./")) gsub("/./","/"); while(index($1,"//")) gsub("//","/");  print $1;}')";
+	
+
+	if [ "upload" == $1 ];then
+		scp -P ${remote_port} ${local_full_path} ${remote_login}@${remote_host}:${remote_full_path}
+	elif [ 'download' == $1 ];then
+		scp -P ${remote_port} ${remote_login}@${remote_host}:${remote_full_path} ${local_full_path}
+	fi
+else
+	echo "Missing sync.conf in project path!";
+	exit 1;
+fi
