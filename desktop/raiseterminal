@@ -29,6 +29,6 @@ if [ "$terminalwin" != "" ]; then
 	xdotool windowactivate ${focuswin};
 else
 	wantterm=$(echo "$terminals" | grep -v '^$' | head -n1);
-	$wantterm
+	$wantterm &
 fi
 
