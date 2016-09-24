@@ -13,7 +13,7 @@ case "$1" in
     enabled="1";
     ;;
   *)
-    enabled=$(xinput list-props "$touchpadname" | grep Enabled | cut -d':' -f2 | awk '{print $1}');
+    enabled=$(xinput list-props "$touchpadname" | grep "Device Enabled" | cut -d':' -f2 | awk '{print $1}');
     ;;
 esac
 if [ "$enabled" == "0" ]; then
