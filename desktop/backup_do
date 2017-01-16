@@ -7,6 +7,8 @@ BTO=/home/leandro/network/nasse/backup/Leandro/LinuxPC
 dt=$(date +%Y%m%d-%H%M%S)
 
 #Execute backup
+rm -f ${BFROM}/configs.tar.gz
+pacman -Qii | awk '/^MODIFIED/ {print $2}' | xargs tar -czhf ${BFROM}/configs.tar.gz
 lastbackup=$(cat ${BTO}/lastbackup 2>/dev/null)
 echo "Last backup:"
 echo ${lastbackup}

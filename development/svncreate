@@ -46,5 +46,21 @@ if [ "$2" != "" ]; then
 	rm -fr /tmp/svncreate
 fi
 
+mkdir /tmp/svnconfig
+cd /tmp/svnconfig
+svn co ${SVNURL}/trunk trunk
+cd trunk
+svn propset svn:ignore "nbproject
+.projectKnowledge
+.classpath
+.settings
+.project
+resources
+temp
+bin" .
+svn commit -m "${MESSAGE} - Aggiunte directory ignorate"
+cd
+rm -fr /tmp/svnconfig
+
 echo "SVN creato su ${SRVHOST}.";
 echo "URL: ${SVNURL}";

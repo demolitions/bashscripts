@@ -15,38 +15,38 @@ FIELD_OS="6";
 if [ -f "$CONFIGFILE" ]; then
   # Configurazione trovata, procedo con la distribuzione
   case "$1" in
-    "push")
+    "push") # Pushes a file to every server in the distribute list
       if [ "$2" == "" ]; then
         echo "Uso: $(basename $0) $1 LOCALFILE [REMOTEPATH]";
       else
         distribute-push "$2" "$3"
       fi
       ;;
-    "pull")
+    "pull") # Pulls a file from every server in the distribute list
       if [ "$2" == "" ]; then
         echo "Uso: $(basename $0) $1 REMOTEFILE";
       else
         distribute-pull "$2"
       fi
       ;;
-    "exec")
+    "exec") # Executes a command on every server in the distribute list
       if [ "$2" == "" ]; then
         echo "Uso: $(basename $0) $1 COMMAND";
       else
         distribute-exec "$2"
       fi
       ;;
-    "batch")
+    "batch") # Executes a command on every server in the distribute list, use when the output is a single line
       if [ "$2" == "" ]; then
         echo "Uso: $(basename $0) $1 COMMAND";
       else
         distribute-batch "$2"
       fi
       ;;
-    "distconfig")
+    "distconfig") # Prints the file name for the distribute list
       echo $CONFIGFILE;
       ;;
-    "serverconf")
+    "serverconf") # Prints the full config for every server from the distribute list
       srvconf="$(grep "^..s" ${CONFIGFILE} | grep ":${2}:" | sed -e's/ //g')";
       case $3 in
 		'short')
@@ -66,44 +66,60 @@ if [ -f "$CONFIGFILE" ]; then
 		;;
       esac
       ;;
-    "serverlist")
+    "serverlist") # Prints a list of all the servers in the distribute list
       if [ "$2" == "short" ]; then
 		cat $CONFIGFILE | grep '^d' | cut -d':' -f${FIELD_SVSHORT} | sed -e's/ //g';
 	  else
 	    cat $CONFIGFILE | grep '^d' | cut -d':' -f${FIELD_SERVER} | sed -e's/ //g';
 	  fi
       ;;
-    "apachelist")
+    "apachelist") # Prints a list of all the WEB servers in the distribute list
       if [ "$2" == "short" ]; then
 		cat $CONFIGFILE | grep '^dw' | cut -d':' -f${FIELD_SVSHORT} | sed -e's/ //g';
 	  else
         cat $CONFIGFILE | grep '^dw' | cut -d':' -f${FIELD_SERVER} | sed -e's/ //g';
       fi
       ;;
-    "serverport")
+    "serverport") # Prints the PORT field from the distribute list
       cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_SSHPORT} | sed -e's/ //g';
       ;;
-    "serveruser")
+    "serveruser") # Prints the USER field from the distribute list
       cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_USER} | sed -e's/ //g';
       ;;
-    "serveros")
+    "serveros") # Prints the OS field from the distribute list
       cat $CONFIGFILE | grep '^d' | grep ":$2:" | cut -d':' -f${FIELD_OS} | sed -e's/ //g';
       ;;
-    "update")
+    "update") # Update servers
 	  distribute exec "yum update && chmod 777 /var/lib/php/session && (/usr/lib/nagios/plugin/check_updates || /usr/lib64/nagios/plugin/check_updates || /usr/lib64/nagios/plugins/check_updates)";
 	  ;;
-	"mtalist")
+	"mtalist") # Recover the MTA setting from the servers
 	  distribute batch "ls -al /etc/alternatives/mta | cut -d'>' -f2 | cut -d'.' -f2";
 	  ;;
-	"smarthost")
+	"smarthost") # Recover the smarthost setting from the servers
 	  distribute-smarthost;
+	  ;;
+	"shell") # Gives a shell on every server, one after another
+	  distribute-shell;
+	  ;;
+	"xshell") # Gives a shell on every server, uses xfce4-terminal
+	  distribute-xshell;
+	  ;;
+	"countcpu") # Returns a count of the CPUs from the servers
+	  distribute batch "cat /proc/cpuinfo | grep '^processor' | wc -l";
+	  ;;
+	"countmem") # Returns a count of the total RAM in gigabytes from the servers
+	  distribute batch "free -g | grep '^Mem' | awk '{print \$2 +1}'";
 	  ;;
     *)
 	  options="";
-	  for line in $(cat $0 | grep "\")" | grep -v grep | awk '{print $1}' | sed -e 's/[")]//g'); do
+	  for line in $(cat $0 | grep "\") #" | grep -v grep | awk '{print $1}' | sed -e 's/[")]//g'); do
 		options="${options}|${line}";
 	  done;
       echo "Uso: $(basename $0) [${options#*|}]";
+      echo "";
+	  for line in $(cat $0 | grep "\") #" | grep -v grep | awk '{print $1}' | sed -e 's/[")]//g'); do
+		printf "    %-15s %s\n" "${line}" "$(cat $0 | grep "\"${line}\") #" | sed -e's/^[\t ]*\".*\") # //g')";
+	  done;
       ;;
   esac
 else
