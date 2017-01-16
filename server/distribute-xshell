@@ -1,0 +1,11 @@
+#!/bin/bash
+CONFIGFILE=$(distribute distconfig);
+
+if [ -f "$CONFIGFILE" ]; then
+  for SERVER in $(distribute serverlist); do
+    SSHPORT=$(distribute serverport $SERVER);
+    SSHUSER=$(distribute serveruser $SERVER);
+    xfce4-terminal --tab --title="${SERVER}" --command="ssh ${SSHUSER}@${SERVER} -p${SSHPORT}" 2>/dev/null &
+    sleep 0.2
+  done
+fi

@@ -1,0 +1,13 @@
+#!/bin/bash
+CONFIGFILE=$(distribute distconfig);
+
+if [ -f "$CONFIGFILE" ]; then
+  for SERVER in $(distribute serverlist); do
+    SSHPORT=$(distribute serverport $SERVER);
+    SSHUSER=$(distribute serveruser $SERVER);
+    echo "distribute shell: SERVER:$SERVER - COMMAND: $1";
+    echo "----------------------------------------------------------------------------------";
+    ssh ${SSHUSER}@${SERVER} -p${SSHPORT}
+    clear
+  done
+fi
